@@ -8,17 +8,16 @@ import Utils (msort, readFileLines)
 getInputs :: State [String] [[String]]
 getInputs = state $ \case
   [] -> return []
-  ins ->
-    let (in1, ins') = runState getSingleInput ins
-        (ins'', ins''') = runState getInputs ins'
-     in (in1 : ins'', ins''')
+  input ->
+    let (counts, input') = runState getSingleInput input
+        (countss, input'') = runState getInputs input'
+     in (counts : countss, input'')
 
 getSingleInput :: State [String] [String]
 getSingleInput = state $ \case
   [] -> return []
-  (cs : css) -> case cs of
-    "" -> ([], css)
-    cs' -> let (cs'', inp) = runState getSingleInput css in (cs' : cs'', inp)
+  ("" : css) -> ([], css)
+  (cs : css) -> let (cs', inp) = runState getSingleInput css in (cs : cs', inp)
 
 main :: IO ()
 main = do

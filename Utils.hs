@@ -1,4 +1,6 @@
-module Utils (readFileLines, readFileData, msort) where
+module Utils (readFileLines, readFileData, msort, dropSpace) where
+
+import Data.Char (isSpace)
 
 readFileLines :: String -> IO [String]
 readFileLines fname = do
@@ -7,6 +9,9 @@ readFileLines fname = do
 
 readFileData :: Read a => String -> IO [a]
 readFileData fname = fmap (map read) (readFileLines fname)
+
+dropSpace :: String -> String
+dropSpace = dropWhile isSpace
 
 msort :: Ord a => [a] -> [a]
 msort [] = []

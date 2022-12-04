@@ -1,6 +1,6 @@
 module AocUtils (readFileLines, readFileData, msort, dropSpace, readInt, readChar) where
 
-import Control.Monad.Reader (ReaderT (ReaderT))
+import Control.Monad.State (StateT (StateT))
 import Data.Char (isDigit, isSpace)
 
 readFileLines :: String -> IO [String]
@@ -11,17 +11,17 @@ readFileLines fname = do
 readFileData :: Read a => String -> IO [a]
 readFileData fname = fmap (map read) (readFileLines fname)
 
-readInt :: ReaderT String Maybe Int
-readInt = ReaderT $ \cs ->
+readInt :: StateT String Maybe Int
+readInt = StateT $ \cs ->
   let cs' = dropSpace cs
    in case takeWhile isDigit cs' of
         [] -> Nothing
-        ns -> Just $ read ns
+        ns -> Just (read ns, drop (length ns) cs')
 
-readChar :: Char -> ReaderT String Maybe Char
-readChar c = ReaderT $ \cs ->
+readChar :: Char -> StateT String Maybe Char
+readChar c = StateT $ \cs ->
   let (c' : cs') = dropSpace cs
-   in if c == c' then Just c else Nothing
+   in if c == c' then Just (c, cs') else Nothing
 
 dropSpace :: String -> String
 dropSpace = dropWhile isSpace

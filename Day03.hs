@@ -3,7 +3,7 @@ module Day03 where
 import Data.Bifunctor (bimap)
 import Data.Char (ord)
 import Data.Maybe (fromJust)
-import Utils (msort, readFileLines)
+import AocUtils (msort, readFileLines)
 
 splitCompartments :: String -> (String, String)
 splitCompartments s = splitAt n s where n = length s `div` 2

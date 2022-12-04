@@ -1,7 +1,7 @@
 module Day02 where
 
 import Control.Monad.State (StateT (StateT), evalStateT, runStateT)
-import Utils (dropSpace)
+import AocUtils (dropSpace)
 
 data Move = Rock | Paper | Scissors deriving (Eq)
 

@@ -1,7 +1,7 @@
 module Day02 where
 
 import Control.Monad.State (StateT (StateT), evalStateT, runStateT)
-import Utils.Parse (dropSpace)
+import Utils.Parse (Parser, dropSpace)
 
 data Move = Rock | Paper | Scissors deriving (Eq)
 
@@ -34,7 +34,7 @@ defeats Scissors Paper = True
 defeats Rock Scissors = True
 defeats _ _ = False
 
-readMove :: StateT String Maybe Move
+readMove :: Parser Move
 readMove = StateT $ \cs ->
   let cs' = dropSpace cs
    in case cs' of
@@ -43,7 +43,7 @@ readMove = StateT $ \cs ->
         ('C' : cs) -> Just (Scissors, cs)
         _ -> Nothing
 
-readResult :: StateT String Maybe Result
+readResult :: Parser Result
 readResult = StateT $ \cs ->
   let cs' = dropSpace cs
    in case cs' of
@@ -52,7 +52,7 @@ readResult = StateT $ \cs ->
         ('Z' : cs) -> Just (Win, cs)
         _ -> Nothing
 
-readStrategy :: StateT String Maybe (Move, Result)
+readStrategy :: Parser (Move, Result)
 readStrategy = do
   m1 <- readMove
   m2 <- readResult

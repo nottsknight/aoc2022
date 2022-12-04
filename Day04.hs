@@ -1,18 +1,18 @@
 module Day04 where
 
 import Control.Monad.State (StateT (StateT), runStateT)
-import Utils.Parse (parseChar, parseInt)
+import Utils.Parse (Parser, parseChar, parseInt)
 
 type Assignment = (Int, Int)
 
-parseAssignment :: StateT String Maybe Assignment
+parseAssignment :: Parser Assignment
 parseAssignment = do
   x <- parseInt
   parseChar '-'
   y <- parseInt
   return (x, y)
 
-parseAssignmentPair :: StateT String Maybe (Assignment, Assignment)
+parseAssignmentPair :: Parser (Assignment, Assignment)
 parseAssignmentPair = do
   r1 <- parseAssignment
   parseChar ','

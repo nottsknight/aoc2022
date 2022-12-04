@@ -3,7 +3,8 @@ module Day03 where
 import Data.Bifunctor (bimap)
 import Data.Char (ord)
 import Data.Maybe (fromJust)
-import AocUtils (msort, readFileLines)
+import Utils.IO (readFileLines)
+import Utils.Sort (msort)
 
 splitCompartments :: String -> (String, String)
 splitCompartments s = splitAt n s where n = length s `div` 2
@@ -39,11 +40,11 @@ findMatch3 (x : xs) (y : ys) (z : zs)
   | otherwise =
     let n = minimum [x, y, z]
      in if n == x
-          then findMatch3 xs (y:ys) (z:zs)
+          then findMatch3 xs (y : ys) (z : zs)
           else
             if n == y
-              then findMatch3 (x:xs) ys (z:zs)
-              else findMatch3 (x:xs) (y:ys) zs
+              then findMatch3 (x : xs) ys (z : zs)
+              else findMatch3 (x : xs) (y : ys) zs
 
 --   | x < y && y < z = findMatch3 xs (y : ys) (z : zs)
 --   | y < z = findMatch3 (x : xs) ys (z : zs)

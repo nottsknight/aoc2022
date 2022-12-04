@@ -3,7 +3,8 @@
 module Day01 where
 
 import Control.Monad.State (State, evalState, runState, state)
-import AocUtils (msort, readFileLines)
+import Utils.IO (readFileLines)
+import Utils.Sort (msort)
 
 getInputs :: State [String] [[String]]
 getInputs = state $ \case

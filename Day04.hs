@@ -1,26 +1,26 @@
 module Day04 where
 
-import AocUtils (readChar, readInt)
 import Control.Monad.State (StateT (StateT), runStateT)
+import Utils.Parse (parseChar, parseInt)
 
 type Assignment = (Int, Int)
 
-readAssignment :: StateT String Maybe Assignment
-readAssignment = do
-  x <- readInt
-  readChar '-'
-  y <- readInt
+parseAssignment :: StateT String Maybe Assignment
+parseAssignment = do
+  x <- parseInt
+  parseChar '-'
+  y <- parseInt
   return (x, y)
 
-readAssignmentPair :: StateT String Maybe (Assignment, Assignment)
-readAssignmentPair = do
-  r1 <- readAssignment
-  readChar ','
-  r2 <- readAssignment
+parseAssignmentPair :: StateT String Maybe (Assignment, Assignment)
+parseAssignmentPair = do
+  r1 <- parseAssignment
+  parseChar ','
+  r2 <- parseAssignment
   return (r1, r2)
 
 getAssignments :: String -> [(Assignment, Assignment)]
-getAssignments input = case runStateT readAssignmentPair input of
+getAssignments input = case runStateT parseAssignmentPair input of
   Nothing -> []
   Just (rs, input') -> rs : getAssignments input'
 

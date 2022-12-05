@@ -1,7 +1,7 @@
 module Day05 where
 
 import Control.Monad.State
-import Data.Maybe (fromJust, isJust, catMaybes)
+import Data.Maybe (fromJust, isJust, catMaybes, mapMaybe)
 import Utils.IO (readFileLines)
 import Utils.Parse
 import Data.List (transpose)
@@ -28,10 +28,11 @@ parseCrate = do
   parseChar ']'
   return c
 
-parseCrateRow :: Parser [Maybe Crate]
-parseCrateRow = do
-  chunks <- gets split4s
-  return $ map (evalStateT parseCrate) chunks
+buildCrateRow :: String -> [Maybe Crate]
+buildCrateRow = map (evalStateT parseCrate) . split4s
+
+buildStackEnv :: [[Maybe Crate]] -> StackEnv
+buildStackEnv = map (reverse . catMaybes) . transpose
 
 parseMove :: Parser Move
 parseMove = do
@@ -74,13 +75,17 @@ applyMoves (m : ms) = do
   applyMove m
   applyMoves ms
 
--- main :: IO ()
--- main = do
---   inputTxt <- readFileLines "data/day05.txt"
---   let crateInput = init $ takeWhile (/= "") inputTxt
---   let startState = buildStackEnv $ map (evalStateT parseCrateRow) crateInput
---   print $ length (head startState)
---   let moveInput = tail $ dropWhile (/= "") inputTxt
---   let moves = map (fromJust . evalStateT parseMove) moveInput
---   let endState = execState (applyMoves moves) startState
---   print $ stackTops endState
+stackTops :: StackEnv -> String
+stackTops [] = ""
+stackTops ([]:ss) = stackTops ss
+stackTops (s:ss) = head s : stackTops ss
+
+main :: IO ()
+main = do
+  inputTxt <- readFileLines "data/day05.txt"
+  let crateInput = init $ takeWhile (/= "") inputTxt
+  let startState = buildStackEnv $ map buildCrateRow crateInput
+  let moveInput = tail $ dropWhile (/= "") inputTxt
+  let moves = mapMaybe (evalStateT parseMove) moveInput
+  let endState = execState (applyMoves moves) startState
+  print $ stackTops endState

@@ -4,15 +4,16 @@ module Utils.Parse
     parseInt,
     parseChar,
     parseString,
+    parseAnyChar
   )
 where
 
+import Control.Applicative (Alternative)
 import Control.Monad.State (StateT (StateT))
 import Data.Char (isDigit, isSpace)
 import Data.List (isPrefixOf)
-import Control.Applicative (Alternative)
 
--- | A state transformer that parses `a`s from a `String` input
+-- | A state transformer that parses `Maybe a`s from a `String` input
 type Parser a = StateT String Maybe a
 
 -- | Returns an integer from the front of the input, if one exists.
@@ -28,6 +29,11 @@ parseChar :: Char -> Parser Char
 parseChar c = StateT $ \cs ->
   let (c' : cs') = dropSpace cs
    in if c == c' then Just (c, cs') else Nothing
+
+-- | Returns the first non-whitespace character from the front of the input.
+parseAnyChar :: Parser Char
+parseAnyChar = StateT $ \cs ->
+  let (c' : cs') = dropSpace cs in Just (c', cs')
 
 -- | Returns the input string if it exists at the head of the input.
 parseString :: String -> Parser String

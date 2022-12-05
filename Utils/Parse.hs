@@ -4,7 +4,7 @@ module Utils.Parse
     parseInt,
     parseChar,
     parseString,
-    parseAnyChar
+    parseAnyChar,
   )
 where
 
@@ -27,8 +27,10 @@ parseInt = StateT $ \cs ->
 -- | Returns a single character from the front of the input.
 parseChar :: Char -> Parser Char
 parseChar c = StateT $ \cs ->
-  let (c' : cs') = dropSpace cs
-   in if c == c' then Just (c, cs') else Nothing
+  let cs' = dropSpace cs
+   in case cs' of
+        "" -> Nothing
+        (c' : cs'') -> if c == c' then Just (c, cs'') else Nothing
 
 -- | Returns the first non-whitespace character from the front of the input.
 parseAnyChar :: Parser Char

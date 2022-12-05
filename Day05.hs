@@ -3,7 +3,14 @@
 {-# HLINT ignore "Use tuple-section" #-}
 module Day05 where
 
-import Control.Monad.State (State, evalState, evalStateT, execState, state)
+import Control.Monad.State
+  ( State,
+    StateT (StateT),
+    evalState,
+    evalStateT,
+    execState,
+    state,
+  )
 import Data.Maybe (fromJust)
 import Utils.IO (readFileLines)
 import Utils.Parse
@@ -20,6 +27,12 @@ type Stack = [Crate]
 
 type StackEnv = [Stack]
 
+split4s :: String -> [String]
+split4s "" = []
+split4s cs = l : split4s rs
+  where
+    (l, rs) = splitAt 4 cs
+
 transfer :: Int -> Stack -> Stack -> (Stack, Stack)
 transfer 0 from to = (from, to)
 transfer _ [] to = error "Cannot transfer from empty stack"
@@ -30,6 +43,9 @@ replaceStack _ s [] = [s]
 replaceStack 0 s (_ : env) = s : env
 replaceStack n s (e : env) = e : replaceStack (n -1) s env
 
+stackTops :: StackEnv -> String
+stackTops = map head
+
 data Move = Move {qty :: Int, from :: Int, to :: Int}
 
 parseCrate :: Parser Crate
@@ -38,6 +54,12 @@ parseCrate = do
   c <- parseAnyChar
   parseChar ']'
   return c
+
+parseCrateRow :: Parser [Crate]
+parseCrateRow = StateT $ \input ->
+  let chunks = split4s input
+      crates = map (fromJust . evalStateT parseCrate) chunks
+   in Just (crates, "")
 
 parseMove :: Parser Move
 parseMove = do
@@ -65,7 +87,11 @@ applyMoves (m : ms) = do
 main :: IO ()
 main = do
   inputTxt <- readFileLines "data/day05.txt"
-  let crateInput = takeWhile (/= "") inputTxt
+  let crateInput = init $ takeWhile (/= "") inputTxt
+  print $ length crateInput
+  let startState = map (fromJust . evalStateT parseCrateRow) crateInput
   let moveInput = tail $ dropWhile (/= "") inputTxt
+  print $ length moveInput
   let moves = map (fromJust . evalStateT parseMove) moveInput
-  print ""
+  let endState = execState (applyMoves moves) startState
+  print $ stackTops endState

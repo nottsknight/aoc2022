@@ -35,7 +35,10 @@ parseChar c = StateT $ \cs ->
 -- | Returns the first non-whitespace character from the front of the input.
 parseAnyChar :: Parser Char
 parseAnyChar = StateT $ \cs ->
-  let (c' : cs') = dropSpace cs in Just (c', cs')
+  let cs' = dropSpace cs
+    in case cs' of
+      "" -> Nothing
+      (c:cs'') -> Just (c, cs'')
 
 -- | Returns the input string if it exists at the head of the input.
 parseString :: String -> Parser String

@@ -50,7 +50,7 @@ applyMove :: Move -> State StackEnv ()
 applyMove (Move qty fromIdx toIdx) = do
   s1 <- getStack fromIdx
   s2 <- getStack toIdx
-  let (s1', s2') = transfer' qty s1 s2
+  let (s1', s2') = transfer'' qty s1 s2
   doReplace fromIdx s1'
   doReplace toIdx s2'
 
@@ -61,6 +61,12 @@ transfer' :: Int -> Stack -> Stack -> (Stack, Stack)
 transfer' 0 from to = (from, to)
 transfer' _ [] to = ([], to)
 transfer' n (f : from) to = transfer' (n -1) from (f : to)
+
+transfer'' :: Int -> Stack -> Stack -> (Stack, Stack)
+transfer'' 0 from to = (from, to)
+transfer'' n from to
+  | n > length from = (from, to)
+  | otherwise = (drop n from, take n from ++ to)
 
 doReplace :: Int -> Stack -> State StackEnv ()
 doReplace n s = do

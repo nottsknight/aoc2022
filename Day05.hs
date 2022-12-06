@@ -62,7 +62,7 @@ transfer' n (f : from) to = transfer' (n -1) from (f : to)
 doReplace :: Int -> Stack -> State StackEnv ()
 doReplace n s = do
   env <- get
-  put $ replace' n s env
+  put $ replace' (n-1) s env
 
 replace' :: Int -> Stack -> StackEnv -> StackEnv
 replace' _ s [] = [s]

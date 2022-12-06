@@ -1,17 +1,20 @@
 module Day05 where
 
 import Control.Monad.State
-import Data.Maybe (fromJust, isJust, catMaybes, mapMaybe)
+import Data.List (transpose)
+import Data.Maybe (catMaybes, fromJust, isJust, mapMaybe)
 import Utils.IO (readFileLines)
 import Utils.Parse
-import Data.List (transpose)
-import Debug.Trace (trace)
 
 type Crate = Char
 
 type Stack = [Crate]
 
 type StackEnv = [Stack]
+
+showStackEnv :: StackEnv -> String
+showStackEnv [] = ""
+showStackEnv (e : env) = show e ++ "\n" ++ showStackEnv env
 
 split4s :: String -> [String]
 split4s "" = []
@@ -32,7 +35,7 @@ buildCrateRow :: String -> [Maybe Crate]
 buildCrateRow = map (evalStateT parseCrate) . split4s
 
 buildStackEnv :: [[Maybe Crate]] -> StackEnv
-buildStackEnv = map (reverse . catMaybes) . transpose
+buildStackEnv = map catMaybes . transpose
 
 parseMove :: Parser Move
 parseMove = do
@@ -47,12 +50,12 @@ applyMove :: Move -> State StackEnv ()
 applyMove (Move qty fromIdx toIdx) = do
   s1 <- getStack fromIdx
   s2 <- getStack toIdx
-  let (s1',s2') = transfer' qty s1 s2
+  let (s1', s2') = transfer' qty s1 s2
   doReplace fromIdx s1'
   doReplace toIdx s2'
 
 getStack :: Int -> State StackEnv Stack
-getStack n = gets (!! (n-1))
+getStack n = gets (!! (n -1))
 
 transfer' :: Int -> Stack -> Stack -> (Stack, Stack)
 transfer' 0 from to = (from, to)
@@ -62,7 +65,7 @@ transfer' n (f : from) to = transfer' (n -1) from (f : to)
 doReplace :: Int -> Stack -> State StackEnv ()
 doReplace n s = do
   env <- get
-  put $ replace' (n-1) s env
+  put $ replace' (n -1) s env
 
 replace' :: Int -> Stack -> StackEnv -> StackEnv
 replace' _ s [] = [s]
@@ -77,8 +80,8 @@ applyMoves (m : ms) = do
 
 stackTops :: StackEnv -> String
 stackTops [] = ""
-stackTops ([]:ss) = stackTops ss
-stackTops (s:ss) = head s : stackTops ss
+stackTops ([] : ss) = stackTops ss
+stackTops (s : ss) = head s : stackTops ss
 
 main :: IO ()
 main = do

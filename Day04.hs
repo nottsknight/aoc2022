@@ -1,6 +1,6 @@
 module Day04 where
 
-import Control.Monad.State (StateT (StateT), runStateT)
+import Control.Monad.State (StateT (StateT), evalStateT)
 import Utils.Parse (Parser, parseChar, parseInt)
 
 type Assignment = (Int, Int)
@@ -19,10 +19,11 @@ parseAssignmentPair = do
   r2 <- parseAssignment
   return (r1, r2)
 
-getAssignments :: String -> [(Assignment, Assignment)]
-getAssignments input = case runStateT parseAssignmentPair input of
-  Nothing -> []
-  Just (rs, input') -> rs : getAssignments input'
+parseAssignments :: Parser [(Assignment,Assignment)]
+parseAssignments = do
+  as <- parseAssignmentPair
+  ass <- parseAssignments
+  return $ as : ass
 
 fullyContains :: Assignment -> Assignment -> Bool
 r1 `fullyContains` r2 = r1 `contains` r2 || r2 `contains` r1
@@ -39,6 +40,6 @@ r1 `overlaps` r2 = overlap' r1 r2 || overlap' r2 r1
 main :: IO ()
 main = do
   input <- readFile "data/day04.txt"
-  let assignments = getAssignments input
+  let (Just assignments) = evalStateT parseAssignments input
   let intersections = filter (uncurry overlaps) assignments
   print $ length intersections

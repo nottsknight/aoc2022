@@ -5,10 +5,12 @@ module Utils.Parse
     parseChar,
     parseString,
     parseAnyChar,
+    empty,
+    (<|>)
   )
 where
 
-import Control.Applicative (Alternative (empty))
+import Control.Applicative (Alternative (empty, (<|>)))
 import Control.Monad.State (StateT (StateT), put, gets, modify)
 import Data.Char (isDigit, isSpace)
 import Data.List (isPrefixOf)

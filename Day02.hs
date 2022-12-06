@@ -1,7 +1,7 @@
 module Day02 where
 
 import Control.Monad.State (StateT (StateT), evalStateT, runStateT)
-import Utils.Parse (Parser, dropSpace)
+import Utils.Parse (Parser, dropSpace, parseAnyChar, empty)
 
 data Move = Rock | Paper | Scissors deriving (Eq)
 
@@ -35,22 +35,22 @@ defeats Rock Scissors = True
 defeats _ _ = False
 
 readMove :: Parser Move
-readMove = StateT $ \cs ->
-  let cs' = dropSpace cs
-   in case cs' of
-        ('A' : cs) -> Just (Rock, cs)
-        ('B' : cs) -> Just (Paper, cs)
-        ('C' : cs) -> Just (Scissors, cs)
-        _ -> Nothing
+readMove = do
+  c <- parseAnyChar
+  case c of
+    'A' -> return Rock
+    'B' -> return Paper
+    'C' -> return Scissors
+    _ -> empty
 
 readResult :: Parser Result
-readResult = StateT $ \cs ->
-  let cs' = dropSpace cs
-   in case cs' of
-        ('X' : cs) -> Just (Loss, cs)
-        ('Y' : cs) -> Just (Draw, cs)
-        ('Z' : cs) -> Just (Win, cs)
-        _ -> Nothing
+readResult = do
+  c <- parseAnyChar
+  case c of
+    'X' -> return Loss
+    'Y' -> return Draw
+    'Z' -> return Win
+    _ -> empty
 
 readStrategy :: Parser (Move, Result)
 readStrategy = do
@@ -58,10 +58,11 @@ readStrategy = do
   m2 <- readResult
   return (m1, m2)
 
-parseGoals :: String -> [(Move, Result)]
-parseGoals input = case runStateT readStrategy input of
-  Nothing -> []
-  Just (xy, input') -> let xs = parseGoals input' in xy : xs
+parseStrategies :: Parser [(Move, Result)]
+parseStrategies = do
+  strat <- readStrategy
+  strats <- parseStrategies
+  return $ strat : strats
 
 pickStrategy :: (Move, Result) -> (Move, Move)
 pickStrategy (m, Draw) = (m, m)
@@ -71,7 +72,7 @@ pickStrategy (m, Win) = (m, moveLoseTo m)
 main :: IO ()
 main = do
   input <- readFile "data/day02.txt"
-  let goals = parseGoals input
+  let (Just goals) = evalStateT parseStrategies input
   let strategies = map pickStrategy goals
   let moveScores = map (moveScore . snd) strategies
   let strategyScores = map strategyScore strategies

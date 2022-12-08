@@ -1,1 +1,4 @@
 data/
+.stack-work/
+*.cabal
+dist-newstyle/

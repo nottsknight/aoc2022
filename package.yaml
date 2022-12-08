@@ -1,0 +1,20 @@
+name: aoc2022
+version: 0.1.0
+
+dependencies:
+  - base >= 4.9 && < 5
+  - matrix
+  - mtl
+
+library:
+  source-dirs: lib
+  exposed-modules:
+    - Utils.IO
+    - Utils.Parse
+    - Utils.Sort
+
+executable:
+  main: Day01.hs
+  source-dirs: src
+  dependencies:
+    - aoc2022

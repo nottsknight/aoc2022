@@ -6,6 +6,9 @@ dependencies:
   - matrix
   - mtl
 
+ghc-options:
+  - -O2
+
 library:
   source-dirs: lib
   exposed-modules:
@@ -13,8 +16,14 @@ library:
     - Utils.Parse
     - Utils.Sort
 
-executable:
-  main: Day01.hs
-  source-dirs: src
-  dependencies:
-    - aoc2022
+executables:
+  Day01:
+    main: Main.hs
+    source-dirs: src/day01
+    dependencies:
+      - aoc2022
+  Day08:
+    main: Main.hs
+    source-dirs: src/day08
+    dependencies:
+      - aoc2022

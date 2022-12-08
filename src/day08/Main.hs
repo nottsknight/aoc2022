@@ -1,4 +1,4 @@
-module Day08 where
+module Main where
 
 import Data.Char (digitToInt)
 import Data.List (transpose)

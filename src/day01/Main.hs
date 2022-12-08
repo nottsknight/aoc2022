@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Day01 where
+module Main where
 
 import Control.Monad.State (State, evalState, runState, state)
 import Utils.IO (readFileLines)
